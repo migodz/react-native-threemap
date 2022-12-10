@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import MapCanvas from './MapCanvas';
 import GestureView from './GestureView';
+import GestureCanvasTestView from './GestureCanvasTestView';
 
 export default function App() {
   return (
@@ -10,6 +11,7 @@ export default function App() {
       {/* <View style={styles.span}/> */}
 
       <MapCanvas/>
+      {/* <GestureCanvasTestView/> */}
       
       {/* <View style={styles.span}/> */}
       <GestureView style={styles.gesture}/>

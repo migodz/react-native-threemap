@@ -1,14 +1,89 @@
-import React, { Suspense, useRef, useState } from "react";
+import React, { Suspense, useLayoutEffect, useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber/native";
 import { StyleSheet } from "react-native";
-import { OrthographicCamera, Box, Plane } from "@react-three/drei/native";
+import {
+  OrthographicCamera,
+  Box,
+  Plane,
+  Instances,
+  Instance,
+} from "@react-three/drei/native";
 import { PanResponder, Animated } from "react-native";
 import { decode_json_map } from "./tools";
-import  Svg, { Circle, Rect } from "react-native-svg";
-import { View } from "@react-three/drei";
+import Svg, { Circle, Rect } from "react-native-svg";
+import * as THREE from 'three'
 
-const MapView = (props) => {
-  return props.tilemap.map((row, i) => {
+
+const o = new THREE.Object3D();
+const c = new THREE.Color();
+/**
+ * Render a map object according to the given tilemap matrix.
+ * @param {*} tilemap - the tilemap matrix in 2D array format where 100 is wall,
+ *                      0 is ground, and -1 means no data. 
+ * @returns the rendered react-three-fiber map view object
+ */
+// const MapView = ({tilemap}) => {
+//   // const ref = useRef();
+
+//   let instances = [];
+
+//   useEffect(() => {
+//     let i = 0;
+//     for (let x = 0; x < tilemap.length; x++) {
+//       for (let y = 0; y < tilemap[x].length; y++) {
+//         const id = i++;
+//         const color = tilemap[x][y] == -1 ? "black" : tilemap[x][y] == 100 ? "grey" : "yellow";
+//         const instance = <Instance color={color} position={[x*0.1-5, y*0.1-5, 0]} key={id} />;
+
+//         instances.push(instance);
+//       }
+//     }
+//   }, []);
+
+//   return (
+//     <Instances>
+//       <planeGeometry />
+//       <meshBasicMaterial />
+//       {instances}
+//     </Instances>
+//   );
+// };
+
+// const MapView = ({tilemap}) => {
+//   const ref = useRef();
+//   const [colors, setColors] = useState([]);
+
+//   console.log(tilemap.length);
+//   console.log(tilemap[0].length);
+
+//   useLayoutEffect(() => {
+//     let i = 0;
+//     for (let x = 0; x < tilemap.length; x++) {
+//       for (let y = 0; y < tilemap[x].length; y++) {
+//         const id = i++;
+//         o.position.set(x*0.1-5, y*0.1-5, 0);
+//         o.updateMatrix();
+//         ref.current.setMatrixAt(id, o.matrix);
+
+//         const color = tilemap[x][y] == -1 ? "black" : tilemap[x][y] == 100 ? "grey" : "yellow";
+//         setColors(oldColors =>[...oldColors, color]);
+//       }
+//     }
+//     ref.current.instanceMatrix.needsUpdate = true;
+//   }, []);
+
+//   return (
+//     <instancedMesh ref={ref} args={[null, null, tilemap.length * tilemap[0].length]}>
+//       <planeBufferGeometry args={[0.1, 0.1]}>
+//         <instancedBufferAttribute attachObject={['attributes', 'color']} args={[colors, 1]} />
+//       </planeBufferGeometry>
+//       <meshLambertMaterial vertexColors={THREE.VertexColors} toneMapped={false} />
+//     </instancedMesh>
+//   );
+// };
+
+const MapView = ({tilemap}) => {
+  return tilemap.map((row, i) => {
     return row.map((tile, j) => {
       return (
         <Plane
@@ -76,7 +151,6 @@ const MapCanvas = () => {
   const tilemap = decode_json_map("./data/map_default.json");
 
   console.log(pan.x, pan.y);
-
   return (
     <Animated.View
       style={[pan.getLayout(), styles.container]}
@@ -96,16 +170,15 @@ const MapCanvas = () => {
           <meshStandardMaterial color="#292929" />
         </mesh>
 
-        <Box args={[1, 1, 1]} position={[0, 0, 0]}>
-          <meshStandardMaterial color="yellow" />
-        </Box>
+        {/* the map view */}
+        <Suspense fallback={null}>
+          <MapView tilemap={tilemap}/>
+        </Suspense>
+        
+        {/* <SvgTilemap tilemap={tilemap} />
+          <Svg url="./data/1.svg" /> */}
         
 
-        {/* <Suspense fallback={null}>
-          <MapView tilemap={tilemap}/> */}
-          {/* <SvgTilemap tilemap={tilemap} />
-          <Svg url="./data/1.svg" /> */}
-        {/* </Suspense> */}
 
         {/* <Box position={[-1.2, 0, 0]} />
       <Box position={[1.2, 0, 0]} /> */}
